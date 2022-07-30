@@ -2,11 +2,11 @@
 #include "ui_calibrationdialog.h"
 #include <QMessageBox>
 
-CalibrationDialog::CalibrationDialog(HID_Wrapper *hw) :
+CalibrationDialog::CalibrationDialog(CS_Control *csc) :
     ui(new Ui::CalibrationDialog)
 {
     ui->setupUi(this);
-    hid_wrapper = hw;
+    cs_control = csc;
 }
 
 CalibrationDialog::~CalibrationDialog()
@@ -16,7 +16,7 @@ CalibrationDialog::~CalibrationDialog()
 
 void CalibrationDialog::on_rawOffsetSB_valueChanged(int arg1)
 {
-    bool res = hid_wrapper->setRawOffset(arg1);
+    bool res = cs_control->setRawOffset(arg1);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
@@ -26,7 +26,7 @@ void CalibrationDialog::on_rawOffsetSB_valueChanged(int arg1)
 
 void CalibrationDialog::on_rawAmplitudeSB_valueChanged(int arg1)
 {
-    bool res = hid_wrapper->setRawAmplitude(arg1);
+    bool res = cs_control->setRawAmplitude(arg1);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
@@ -36,13 +36,13 @@ void CalibrationDialog::on_rawAmplitudeSB_valueChanged(int arg1)
 
 void CalibrationDialog::on_buttonBox_accepted()
 {
-    bool res = hid_wrapper->saveCalibrationData();
+    bool res = cs_control->saveCalibrationData();
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
     }
 
-    res = hid_wrapper->calibrationModeControl(false);
+    res = cs_control->calibrationModeControl(false);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
@@ -52,7 +52,7 @@ void CalibrationDialog::on_buttonBox_accepted()
 
 void CalibrationDialog::on_buttonBox_rejected()
 {
-    bool res = hid_wrapper->calibrationModeControl(false);
+    bool res = cs_control->calibrationModeControl(false);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));

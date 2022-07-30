@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <dbt.h>
 
-#include "hid_wrapper.h"
+#include "cs_control.h"
 #include "calibrationdialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -31,13 +31,13 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    HID_Wrapper *hid_wrapper  = Q_NULLPTR;
+    CS_Control *cs_control = Q_NULLPTR;
     HDEVNOTIFY register_handle;
 
     bool isUSBConnected = false;
     bool isRMS = false;
     double amplitude = 0;
-    short USB_PID = 0x5752;
+    short USB_PID = 0x5753;
     short USB_VID = 0x0483;
 
 protected:

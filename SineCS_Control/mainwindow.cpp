@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     NotificationFilter.dbcc_classguid = InterfaceClassGuid;
 
     register_handle = RegisterDeviceNotification((void*)(this->winId()),&NotificationFilter,0);
-    hid_wrapper = new HID_Wrapper();
+    cs_control = new CS_Control();
 
     qApp->installEventFilter(this);
 
@@ -31,10 +31,14 @@ MainWindow::~MainWindow()
 
     this->disconnect();
 
-    hid_wrapper->closeDevice();
-
-    if(hid_wrapper != Q_NULLPTR)
-        delete hid_wrapper;
+    if(cs_control != Q_NULLPTR)
+    {
+        if(isUSBConnected)
+        {
+            cs_control->closeDevice();
+        }
+        delete cs_control;
+    }
 
     delete ui;
 }
@@ -43,10 +47,9 @@ void MainWindow::on_usbConnectBtn_clicked()
 {
     if(!isUSBConnected)
     {
-        isUSBConnected = hid_wrapper->openDevice(USB_VID, USB_PID);
+        isUSBConnected = cs_control->openDevice(USB_VID, USB_PID);
         if(isUSBConnected)
         {
-            connect(hid_wrapper->getInputThread(), &ReadThread::dataReceived, this, &MainWindow::onInputDataReceived, Qt::DirectConnection);
             // set initial amplitude value
             on_amplitudeSpinBox_valueChanged(amplitude);
             // update UI
@@ -57,8 +60,7 @@ void MainWindow::on_usbConnectBtn_clicked()
     else
     {
         isUSBConnected = false;
-        disconnect(hid_wrapper->getInputThread(), &ReadThread::dataReceived, this, &MainWindow::onInputDataReceived);
-        hid_wrapper->closeDevice();
+        cs_control->closeDevice();
         // update UI
         ui->usbConnectBtn->setText(tr("Connect"));
         ui->amplitudeGB->setEnabled(false);
@@ -69,10 +71,11 @@ void MainWindow::on_usbConnectBtn_clicked()
 
 void MainWindow::on_powerCtrlCB_clicked(bool checked)
 {
-    bool res = hid_wrapper->powerControl(checked);
+    bool res = cs_control->powerControl(checked);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
+        return;
     }
     // update UI
     ui->amplitudeGB->setEnabled(checked);
@@ -113,7 +116,7 @@ void MainWindow::on_amplitudeSpinBox_valueChanged(double arg1)
         amplitude0A1 *= 1.4142;
     }
 
-    res = hid_wrapper->setAmplitude((uint8_t)amplitude0A1);
+    res = cs_control->setAmplitude((uint8_t)amplitude0A1);
     if(!res)
     {
         QMessageBox::warning(this, tr("Error"), tr("Can't send data"));
@@ -122,8 +125,8 @@ void MainWindow::on_amplitudeSpinBox_valueChanged(double arg1)
 
 void MainWindow::on_calibrationBtn_clicked()
 {
-    hid_wrapper->calibrationModeControl(true);
-    CalibrationDialog* cd = new CalibrationDialog(hid_wrapper);
+    cs_control->calibrationModeControl(true);
+    CalibrationDialog* cd = new CalibrationDialog(cs_control);
     cd->setAttribute(Qt::WA_DeleteOnClose);
     cd->exec();
 }
@@ -145,10 +148,10 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr
     {
         if(msg->wParam == 0x8000 || msg->wParam == 0x8004) //if USB device attached of detached
         {
-            if(hid_wrapper != Q_NULLPTR)
+            if(cs_control != Q_NULLPTR)
             {
-                // check USB and BT keyboard connection status
-                usbHidState = hid_wrapper->checkDeviceConnected(USB_VID, USB_PID);
+                // check USB connection status
+                usbHidState = cs_control->checkDeviceConnected(USB_VID, USB_PID);
 
                 // if USB connection status changed
                 if(isUSBConnected != usbHidState)

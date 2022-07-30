@@ -10,18 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     calibrationdialog.cpp \
-    hid.c \
-    hid_wrapper.cpp \
+    cs_control.cpp \
     main.cpp \
-    mainwindow.cpp \
-    readthread.cpp
+    mainwindow.cpp
 
 HEADERS += \
     calibrationdialog.h \
-    hid_wrapper.h \
-    hidapi.h \
-    mainwindow.h \
-    readthread.h
+    cs_control.h \
+    mainwindow.h
 
 FORMS += \
     calibrationdialog.ui \
@@ -37,7 +33,7 @@ DEPENDPATH += $$PWD/Libs/Includes/
 
 LIBS += -lsetupapi
 LIBS += -luser32
-LIBS += -L$$PWD/Libs/Src/ -lNSUSB
+LIBS += -L$$PWD/Libs/Src/ -llibusb-1.0
 
 CONFIG(release, debug|release) {
     DESTDIR = release_output

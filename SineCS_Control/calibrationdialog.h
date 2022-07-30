@@ -2,7 +2,7 @@
 #define CALIBRATIONDIALOG_H
 
 #include <QDialog>
-#include "hid_wrapper.h"
+#include "cs_control.h"
 
 namespace Ui {
 class CalibrationDialog;
@@ -13,7 +13,7 @@ class CalibrationDialog : public QDialog
     Q_OBJECT
 
 public:
-    CalibrationDialog(HID_Wrapper* hw);
+    CalibrationDialog(CS_Control* csc);
     ~CalibrationDialog();
 
 private slots:
@@ -24,7 +24,7 @@ private slots:
 
 private:
     Ui::CalibrationDialog *ui;
-    HID_Wrapper *hid_wrapper  = Q_NULLPTR;
+    CS_Control *cs_control  = Q_NULLPTR;
 };
 
 #endif // CALIBRATIONDIALOG_H
