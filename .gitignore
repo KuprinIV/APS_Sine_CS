@@ -16,3 +16,4 @@ build-KF3_TestProgram-Desktop_Qt_6_2_3_MinGW_64_bit-Debug
 *.user
 build-SineCS_Control-Desktop_Qt_6_2_3_MSVC2019_64bit-Debug
 build-SineCS_Control-Desktop_Qt_6_2_3_MinGW_64_bit-Debug
+build-SineCS_Control-Desktop_Qt_6_2_3_MinGW_64_bit-Release
