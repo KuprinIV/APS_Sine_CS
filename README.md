@@ -1,5 +1,5 @@
 # APS_Sine_CS
-PC program for control and calibration of sine wave current source device. Control interface is USB with WinUSB driver
+PC program for control and calibration of sine wave current source device. Control interface is USB with WinUSB driver. Developed on Qt platform
 # Directory contents
   - /SineCS_Control/main.cpp                    Main program file
   - /SineCS_Control/mainwindow.h                Main window class header file
