@@ -13,7 +13,7 @@ public:
 
     bool openDevice(ushort vid, ushort pid);
     bool closeDevice(void);
-    bool checkDeviceConnected(ushort vid, ushort pid);
+    bool registerHotplugCallback(ushort vid, ushort pid);
 
     // CS control commands
     bool powerControl(bool is_enabled);
@@ -23,13 +23,21 @@ public:
     bool setRawAmplitude(ushort ampl);
     bool setAmplitude(unsigned char ampl_0_1);
 
+signals:
+    void deviceWasConnected(void);
+    void deviceWasDisconnected(void);
+
 private:
     // members
     libusb_device_handle *cs_device = Q_NULLPTR;     //указатель на устройство
+    libusb_hotplug_callback_handle hotplug_callback_handle;
     bool isLibusbInited = false;
+    bool isHotplugCallbackRegistered = false;
 
     // functions
     bool controlTransfer(uint8_t bRequest, uint16_t wValue);
+    static int hotplugEventCallback(struct libusb_context *ctx, struct libusb_device *dev,
+                             libusb_hotplug_event event, void *user_data);
 };
 
 #endif // CS_CONTROL_H

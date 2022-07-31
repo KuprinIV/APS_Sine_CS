@@ -31,8 +31,6 @@ CONFIG += embed_translations
 INCLUDEPATH += $$PWD/Libs/Includes/
 DEPENDPATH += $$PWD/Libs/Includes/
 
-LIBS += -lsetupapi
-LIBS += -luser32
 LIBS += -L$$PWD/Libs/Src/ -llibusb-1.0
 
 CONFIG(release, debug|release) {

@@ -8,33 +8,26 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    //register device attach/detach events  {88BAE032-5A81-49f0-BC3D-A4FF138216D6}
-    GUID InterfaceClassGuid = {0x4d1e55b2, 0xf16f, 0x11cf, {0x88, 0xcb, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30} };//HID class GUID
-    DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
-    NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-    NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-    NotificationFilter.dbcc_classguid = InterfaceClassGuid;
-
-    register_handle = RegisterDeviceNotification((void*)(this->winId()),&NotificationFilter,0);
     cs_control = new CS_Control();
-
-    qApp->installEventFilter(this);
+    // if hotplug supports, add USB connect/disconnect events handling
+    if(cs_control->registerHotplugCallback(USB_VID, USB_PID))
+    {
+        connect(cs_control, &CS_Control::deviceWasConnected, this, &MainWindow::onDeviceConnected);
+        connect(cs_control, &CS_Control::deviceWasDisconnected, this, &MainWindow::onDeviceDisconnected);
+    }
 
     amplitude = ui->amplitudeSpinBox->value();
 }
 
 MainWindow::~MainWindow()
 {
-    UnregisterDeviceNotification(register_handle);
-
-    isUSBConnected = false;
-
     this->disconnect();
 
     if(cs_control != Q_NULLPTR)
     {
         if(isUSBConnected)
         {
+            isUSBConnected = false;
             cs_control->closeDevice();
         }
         delete cs_control;
@@ -131,35 +124,25 @@ void MainWindow::on_calibrationBtn_clicked()
     cd->exec();
 }
 
-void MainWindow::onInputDataReceived(QByteArray* input_data)
+void MainWindow::onDeviceConnected(void)
 {
-    // clear report data array
-    input_data->clear();
+    isUSBConnected = cs_control->openDevice(USB_VID, USB_PID);
+    if(isUSBConnected)
+    {
+        // set initial amplitude value
+        on_amplitudeSpinBox_valueChanged(amplitude);
+        // update UI
+        ui->usbConnectBtn->setText(tr("Disconnect"));
+        ui->csControlGB->setEnabled(true);
+    }
 }
 
-bool MainWindow::nativeEvent(const QByteArray &eventType, void *message, qintptr *result)
+void MainWindow::onDeviceDisconnected(void)
 {
-    Q_UNUSED(result);
-    Q_UNUSED(eventType);
-    MSG* msg = reinterpret_cast<MSG*>(message);
-    bool usbHidState;
-
-    if(msg->message == WM_DEVICECHANGE)
-    {
-        if(msg->wParam == 0x8000 || msg->wParam == 0x8004) //if USB device attached of detached
-        {
-            if(cs_control != Q_NULLPTR)
-            {
-                // check USB connection status
-                usbHidState = cs_control->checkDeviceConnected(USB_VID, USB_PID);
-
-                // if USB connection status changed
-                if(isUSBConnected != usbHidState)
-                {
-                    on_usbConnectBtn_clicked();
-                }
-            }
-        }
-    }
-    return false;
+    isUSBConnected = false;
+    cs_control->closeDevice();
+    // update UI
+    ui->usbConnectBtn->setText(tr("Connect"));
+    ui->amplitudeGB->setEnabled(false);
+    ui->csControlGB->setEnabled(false);
 }

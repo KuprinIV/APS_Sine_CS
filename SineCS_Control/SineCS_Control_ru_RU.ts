@@ -50,13 +50,13 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.ui" line="26"/>
         <source>Sine current source control</source>
-        <translation>Управление источником синусоидального тока</translation>
+        <translation type="vanished">Синусоидальный ИТ</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="35"/>
-        <location filename="mainwindow.cpp" line="63"/>
+        <location filename="mainwindow.cpp" line="55"/>
+        <location filename="mainwindow.cpp" line="148"/>
         <source>Connect</source>
         <translation>Подключить</translation>
     </message>
@@ -83,7 +83,7 @@
     <message>
         <location filename="mainwindow.ui" line="81"/>
         <source>Peak</source>
-        <translation>Пиковое зн-е</translation>
+        <translation>Пиковая</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="98"/>
@@ -96,19 +96,20 @@
         <translation>RMS</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="53"/>
+        <location filename="mainwindow.cpp" line="46"/>
+        <location filename="mainwindow.cpp" line="138"/>
         <source>Disconnect</source>
         <translation>Отключить</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="75"/>
-        <location filename="mainwindow.cpp" line="119"/>
+        <location filename="mainwindow.cpp" line="67"/>
+        <location filename="mainwindow.cpp" line="112"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="75"/>
-        <location filename="mainwindow.cpp" line="119"/>
+        <location filename="mainwindow.cpp" line="67"/>
+        <location filename="mainwindow.cpp" line="112"/>
         <source>Can&apos;t send data</source>
         <translation>Не удалось передать данные</translation>
     </message>
